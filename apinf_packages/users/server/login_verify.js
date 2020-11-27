@@ -15,6 +15,7 @@ import _ from 'lodash';
 
 // Collection imports
 import Settings from '/apinf_packages/settings/collection';
+//import Users from '/apinf_packages/users/collection'; NOT EXISTING
 
 // APInf imports
 import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validate_settings';
@@ -22,23 +23,36 @@ import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validat
 // Login attempt verifier to require verified email before login
 export default function loginAttemptVerifier (parameters) {
   // Init user login allowed
-  let userLoginAllowed = false;
+  let userLoginAllowed = true;
 
   // Get reference to user object, to improve readability of later code
   const user = parameters.user;
 
+  // Get users
   const settings = Settings.findOne();
 
+  //If there is no settings allow login
+  if(!settings){ return true;}
+  console.log("one")
+  console.log(settings)
+  console.log("two")
+
   // If basic login button is hidden, do not allow login at all
+  console.log("kolme")
   if (!settings.loginMethods.username_psw) {
     // Make sure user object exists
+  console.log("nelja")
     if (user && user._id) {
+  console.log("viisi")
       // Admin users are always allowed to log in
       if (Roles.userIsInRole(user._id, ['admin'])) {
+  console.log("kuusi")
         userLoginAllowed = true;
       } else if (mailSettingsValid(settings)) {
+  console.log("seitsemä")
         if (user && user.emails && (user.emails.length > 0)) {
           // Get user emails
+  console.log("kasi")
           const emails = parameters.user.emails;
 
           // Check if any of user's emails are verified
