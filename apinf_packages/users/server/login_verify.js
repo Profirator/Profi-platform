@@ -31,28 +31,19 @@ export default function loginAttemptVerifier (parameters) {
   // Get users
   const settings = Settings.findOne();
 
-  //If there is no settings allow login
+  //If there is no settings allow login. This is for the initial login before settings are created by user
   if(!settings){ return true;}
-  console.log("one")
-  console.log(settings)
-  console.log("two")
 
   // If basic login button is hidden, do not allow login at all
-  console.log("kolme")
   if (!settings.loginMethods.username_psw) {
     // Make sure user object exists
-  console.log("nelja")
     if (user && user._id) {
-  console.log("viisi")
       // Admin users are always allowed to log in
       if (Roles.userIsInRole(user._id, ['admin'])) {
-  console.log("kuusi")
         userLoginAllowed = true;
       } else if (mailSettingsValid(settings)) {
-  console.log("seitsemä")
         if (user && user.emails && (user.emails.length > 0)) {
           // Get user emails
-  console.log("kasi")
           const emails = parameters.user.emails;
 
           // Check if any of user's emails are verified
