@@ -22,8 +22,8 @@ import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validat
 
 // Login attempt verifier to require verified email before login
 export default function loginAttemptVerifier (parameters) {
-  // Init user login allowed
-  let userLoginAllowed = true;
+  // by default do not allow login
+  let userLoginAllowed = false;
 
   // Get reference to user object, to improve readability of later code
   const user = parameters.user;
