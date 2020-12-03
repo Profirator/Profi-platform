@@ -22,6 +22,7 @@ import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validat
 
 // Login attempt verifier to require verified email before login
 export default function loginAttemptVerifier (parameters) {
+
   // by default do not allow login
   let userLoginAllowed = false;
 
@@ -34,8 +35,24 @@ export default function loginAttemptVerifier (parameters) {
   //If there is no settings allow login. This is for the initial login before settings are created by user
   if(!settings){ return true;}
 
+  // If FIWARE login is set visible in settings, set login as allowed
+  if (settings.loginMethods.fiware == false && parameters.type == "fiware") {
+    userLoginAllowed = true; 
+  }
+
+  // If HSL login is set visible in settings, set login as allowed
+  if (settings.loginMethods.hsl_id == false && parameters.type == "hsl") {
+    userLoginAllowed = true;
+  }
+ 
+  // If Git login is set visible in settings, set login as allowed
+  if (settings.loginMethods.github == false && parameters.type == "github") {
+    userLoginAllowed = true;
+  }
+
+  
   // If basic login button is hidden, do not allow login at all
-  if (!settings.loginMethods.username_psw) {
+  if (!settings.loginMethods.username_psw && parameters.type == "password") {
     // Make sure user object exists
     if (user && user._id) {
       // Admin users are always allowed to log in
@@ -68,6 +85,7 @@ export default function loginAttemptVerifier (parameters) {
       }
     }
   }
+  
 
   return userLoginAllowed;
 }
