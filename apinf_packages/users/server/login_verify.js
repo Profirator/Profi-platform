@@ -15,22 +15,44 @@ import _ from 'lodash';
 
 // Collection imports
 import Settings from '/apinf_packages/settings/collection';
+//import Users from '/apinf_packages/users/collection'; NOT EXISTING
 
 // APInf imports
 import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validate_settings';
 
 // Login attempt verifier to require verified email before login
 export default function loginAttemptVerifier (parameters) {
-  // Init user login allowed
+
+  // by default do not allow login
   let userLoginAllowed = false;
 
   // Get reference to user object, to improve readability of later code
   const user = parameters.user;
 
+  // Get users
   const settings = Settings.findOne();
 
+  //If there is no settings allow login. This is for the initial login before settings are created by user
+  if(!settings){ return true;}
+
+  // If FIWARE login is set visible in settings, set login as allowed
+  if (settings.loginMethods.fiware == false && parameters.type == "fiware") {
+    userLoginAllowed = true; 
+  }
+
+  // If HSL login is set visible in settings, set login as allowed
+  if (settings.loginMethods.hsl_id == false && parameters.type == "hsl") {
+    userLoginAllowed = true;
+  }
+ 
+  // If Git login is set visible in settings, set login as allowed
+  if (settings.loginMethods.github == false && parameters.type == "github") {
+    userLoginAllowed = true;
+  }
+
+  
   // If basic login button is hidden, do not allow login at all
-  if (!settings.loginMethods.username_psw) {
+  if (!settings.loginMethods.username_psw && parameters.type == "password") {
     // Make sure user object exists
     if (user && user._id) {
       // Admin users are always allowed to log in
@@ -63,6 +85,7 @@ export default function loginAttemptVerifier (parameters) {
       }
     }
   }
+  
 
   return userLoginAllowed;
 }
