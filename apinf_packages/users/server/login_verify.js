@@ -15,52 +15,77 @@ import _ from 'lodash';
 
 // Collection imports
 import Settings from '/apinf_packages/settings/collection';
+//import Users from '/apinf_packages/users/collection'; NOT EXISTING
 
 // APInf imports
 import { mailSettingsValid } from '/apinf_packages/core/helper_functions/validate_settings';
 
 // Login attempt verifier to require verified email before login
 export default function loginAttemptVerifier (parameters) {
-  // Init user login allowed
+
+  // by default do not allow login
   let userLoginAllowed = false;
 
   // Get reference to user object, to improve readability of later code
   const user = parameters.user;
 
+  // Get users
   const settings = Settings.findOne();
 
-  // Make sure user object exists
-  if (user && user._id) {
-    // Admin users are always allowed to log in
-    if (Roles.userIsInRole(user._id, ['admin'])) {
-      userLoginAllowed = true;
-      // Check if mail settings are ok
-    } else if (mailSettingsValid(settings)) {
-      if (user && user.emails && (user.emails.length > 0)) {
-        // Get user emails
-        const emails = parameters.user.emails;
+  //If there is no settings allow login. This is for the initial login before settings are created by user
+  if(!settings){ return true;}
 
-        // Check if any of user's emails are verified
-        const verified = _.find(emails, (email) => { return email.verified; });
+  // If FIWARE login is set visible in settings, set login as allowed
+  if (settings.loginMethods.fiware == false && parameters.type == "fiware") {
+    userLoginAllowed = true; 
+  }
 
-        // If no email is verified, throw an error
-        if (!verified) {
-          throw new Meteor.Error(500, TAPi18n.__('loginVerify_errorMessage'));
-        }
+  // If HSL login is set visible in settings, set login as allowed
+  if (settings.loginMethods.hsl_id == false && parameters.type == "hsl") {
+    userLoginAllowed = true;
+  }
+ 
+  // If Git login is set visible in settings, set login as allowed
+  if (settings.loginMethods.github == false && parameters.type == "github") {
+    userLoginAllowed = true;
+  }
 
-        // If email is verified and parameters.allowed is true, user login is allowed
-        if (verified && parameters.allowed) {
-          userLoginAllowed = true;
+  
+  // If basic login button is hidden, do not allow login at all
+  if (!settings.loginMethods.username_psw && parameters.type == "password") {
+    // Make sure user object exists
+    if (user && user._id) {
+      // Admin users are always allowed to log in
+      if (Roles.userIsInRole(user._id, ['admin'])) {
+        userLoginAllowed = true;
+      } else if (mailSettingsValid(settings)) {
+        if (user && user.emails && (user.emails.length > 0)) {
+          // Get user emails
+          const emails = parameters.user.emails;
+
+          // Check if any of user's emails are verified
+          const verified = _.find(emails, (email) => { return email.verified; });
+
+          // If no email is verified, throw an error
+          if (!verified) {
+            throw new Meteor.Error(500, TAPi18n.__('loginVerify_errorMessage'));
+          }
+
+          // If email is verified and parameters.allowed is true, user login is allowed
+          if (verified && parameters.allowed) {
+            userLoginAllowed = true;
+          }
+        } else {
+          // User doesn't have registered email, so login not allowed
+          userLoginAllowed = false;
         }
       } else {
-        // User doesn't have registered email, so login not allowed
-        userLoginAllowed = false;
+        // Allow login without email verification if mail settings not configured correctly
+        userLoginAllowed = true;
       }
-    } else {
-      // Allow login without email verification if mail settings not configured correctly
-      userLoginAllowed = true;
     }
   }
+  
 
   return userLoginAllowed;
 }

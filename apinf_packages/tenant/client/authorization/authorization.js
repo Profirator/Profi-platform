@@ -49,23 +49,28 @@ Template.authorizationForm.events({
       Meteor.call('getTenantTokenObj', tenantPassword, (error, result) => {
         if (error) {
           sAlert.error(error);
-        } else if (result.response && result.response.data.error === 'invalid_grant') {
-          // Show error
-          sAlert.error('Incorrect password.');
-
-          // Reset processing button
-          $('#refreshTenantAuthorization').button('reset');
-        } else {
+        } else if (result.data && result.data.access_token) { 
           // Get success message translation
-          const successMessage = 'We have successfully got you a new token!';
+          const successMessage = TAPi18n.__('tenantAuthorization_get_token_success');
 
-          // Alert the user of success
-          sAlert.success(successMessage);
+          // const successMessage = result.data;
+ 
+           // Alert the user of success
+           sAlert.success(successMessage);
+ 
+           // Reset processing button
+           $('#refreshTenantAuthorization').button('reset');
+ 
+           Session.set('tenantTokenObj', result.data);
+ 
+        } else {
+          // Show error
+          const failureMessage = TAPi18n.__('tenantAuthorization_get_token_failure');
+
+          sAlert.error(failureMessage);
 
           // Reset processing button
           $('#refreshTenantAuthorization').button('reset');
-
-          Session.set('tenantTokenObj', result.data);
         }
       });
 

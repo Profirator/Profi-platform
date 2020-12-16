@@ -29,7 +29,7 @@
 # Installation
 
 ## Note on migration
-We are in the process of updating MeteorJS version from 1.5.2 to 1.8. If you need to update the installation which is based on Meteor 1.5.2 to version which uses Meteor 1.8, you need to run MongoDB migration. More information here: https://docs.mongodb.com/manual/release-notes/3.6-upgrade-standalone/
+We have updated MeteorJS version from 1.5.2 to 1.8. If you need to update the installation which is based on Meteor 1.5.2 to version which uses Meteor 1.8, you need to run MongoDB migration. More information here: https://docs.mongodb.com/manual/release-notes/3.6-upgrade-standalone/
 
 The issue is that new version of MongoDB which comes with MeteorJS version 1.8 has new database engine; Procedure is to 1) mongo dump 2) upgrade to version with meteor 1.8 3)meteor reset 4) mongo restore 
 
@@ -40,11 +40,22 @@ We have forked the NREL/api-umbrella: https://github.com/apinf/apinf-umbrella; W
 
 1. Clone APInf fork of umbrella: https://github.com/apinf/api-umbrella and follow the instructions in that repo. Easiest way to get started is to follow "With Docker Compose" section below and when you got that working, start exploring options. 
 2. Install [Meteor.js](https://www.meteor.com/install)
-3. Clone [Apinf](https://github.com/apinf/platform)
-4. Run `meteor npm install` - using meteor instead npm makes sure the same npm is used that comes with meteor distribution
-5. Type `meteor` in the project directory
+3. Clone [Apinf](https://github.com/apinf/platform), a new folder "platform" created. cd into that platform:
+```
+$ cd platform/
+xxyy@ThinkPad-T430s:~/platform$ 
+```
+4. Run `meteor npm install` - using meteor instead npm makes sure the same npm is used that comes with meteor distribution:
+```
+~/platform$ meteor npm install
+```
+5. Type `meteor` in the project directory:
+```
+ThinkPad-T430s:~/platform$ meteor
+                            
+```
 
-## With Docker -OBSOLETED
+## With Docker
 
 1. Run API-umbrella container http://api-umbrella.readthedocs.io/en/latest/getting-started.html#running-with-docker
 2. Obtaining API Key and Authentication token. You can obtain the *Authentication Token* and *API Key* from the API Umbrella platform by following instructions in the [Getting Started](http://apiumbrella.io/docs/getting-started/) and [API Umbrella Admin API](http://apiumbrella.io/docs/admin-api/) documentation.
