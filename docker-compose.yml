@@ -1,7 +1,7 @@
 version: '2'
 services:
   apinf:
-    image: apinf/platform:0.60.0
+    image: profirator/platform:0.60.1
     restart: always
     env_file:
       - 'docker/env.apinf'
@@ -13,7 +13,7 @@ services:
     links:
       - elasticsearch:elasticsearch.docker
   apiumbrella:
-    image: apinf/api-umbrella:0.15.0-apinf2
+    image: profirator/api-umbrella:0.15.3
     restart: always
     volumes:
       - ./docker/api-umbrella/config:/etc/api-umbrella
